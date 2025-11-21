@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-1)]
@@ -24,6 +25,10 @@ public class GameManager : MonoBehaviour
     private GameObject gameOverCanvas;
     private GameObject gameOverPanel;
 
+    [SerializeField] private GameObject victoryCanvasPrefab; 
+    private GameObject victoryCanvas;
+    private GameObject victoryPanel;
+
     private void Awake()
     {
         if (Instance != null)
@@ -35,7 +40,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            
+          
             if (gameOverCanvasPrefab != null)
             {
                 gameOverCanvas = Instantiate(gameOverCanvasPrefab);
@@ -46,6 +51,19 @@ public class GameManager : MonoBehaviour
             else
             {
                 Debug.LogError("Game Over Canvas Prefab не назначен в Inspector!");
+            }
+
+           
+            if (victoryCanvasPrefab != null)
+            {
+                victoryCanvas = Instantiate(victoryCanvasPrefab);
+                DontDestroyOnLoad(victoryCanvas);
+                victoryPanel = victoryCanvas.transform.Find("VictoryPanel")?.gameObject;
+                if (victoryPanel != null) victoryPanel.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("Victory Canvas Prefab не назначен в Inspector!");
             }
 
             FindSceneReferences();
@@ -131,6 +149,7 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = 1f;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (victoryPanel != null) victoryPanel.SetActive(false);  
         LoadLevel(1);
     }
 
@@ -140,7 +159,14 @@ public class GameManager : MonoBehaviour
 
         if (Cleared())
         {
-            LoadLevel(level + 1);
+            if (level == NUM_LEVELS)  
+            {
+                ShowVictory();
+            }
+            else
+            {
+                LoadLevel(level + 1);
+            }
         }
     }
 
@@ -157,7 +183,23 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    
+   
+    private void ShowVictory()
+    {
+        Debug.Log("Победа! Остановка времени и показ панели победы.");
+        Time.timeScale = 0f;
+        if (victoryPanel != null)
+        {
+            victoryPanel.SetActive(true);
+            Debug.Log("Панель победы активирована: " + victoryPanel.activeSelf);
+        }
+        else
+        {
+            Debug.LogError("VictoryPanel отсутствует! Проверьте инстанцирование Canvas и структуру префаба (Panel внутри Canvas с именем 'VictoryPanel').");
+        }
+    }
+
+   
     public void ReloadCurrentLevel()
     {
         string currentScene = SceneManager.GetActiveScene().name;
@@ -167,6 +209,7 @@ public class GameManager : MonoBehaviour
             ResetLevel();
             Time.timeScale = 1f;
             if (gameOverPanel != null) gameOverPanel.SetActive(false);
+            if (victoryPanel != null) victoryPanel.SetActive(false);  
             SceneManager.sceneLoaded += OnLevelLoaded;
             SceneManager.LoadScene(currentScene);
         }
@@ -176,16 +219,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-  
+   
     public void RestartCurrentLevel()
     {
         Debug.Log($"Рестарт уровня после Game Over: сброс lives=3, сохранение score={score} и level={level}, перезагрузка уровня");
-        lives = 3; 
+        lives = 3;  
         ResetLevel();
-        Time.timeScale = 1f;  
+        Time.timeScale = 1f; 
         if (gameOverPanel != null) gameOverPanel.SetActive(false);  
         SceneManager.sceneLoaded += OnLevelLoaded;  
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);  
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);     
+        if (victoryPanel != null) victoryPanel.SetActive(false);
     }
 
     public void LoadMenu()
@@ -193,6 +237,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Загрузка меню");
         Time.timeScale = 1f;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (victoryPanel != null) victoryPanel.SetActive(false);
         SceneManager.sceneLoaded += OnMenuLoaded;
         SceneManager.LoadScene(menuSceneName);
     }
