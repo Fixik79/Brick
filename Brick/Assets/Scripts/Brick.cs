@@ -33,15 +33,19 @@ public class Brick : MonoBehaviour
 
     private void Hit()
     {
-        if (unbreakable) {
+        if (unbreakable)
+        {
             return;
         }
 
         health--;
 
-        if (health <= 0) {
+        if (health <= 0)
+        {
             gameObject.SetActive(false);
-        } else {
+        }
+        else
+        {
             spriteRenderer.sprite = states[health - 1];
         }
 
@@ -50,7 +54,8 @@ public class Brick : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Ball") {
+        if (collision.gameObject.name == "Ball")
+        {
             Hit();
         }
     }

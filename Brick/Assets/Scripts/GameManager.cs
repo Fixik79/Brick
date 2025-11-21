@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string menuSceneName = "Menu";
 
     [Header("UI")]
-    [SerializeField] private GameObject gameOverCanvasPrefab;  // Префаб всего Canvas
+    [SerializeField] private GameObject gameOverCanvasPrefab;  
     private GameObject gameOverCanvas;
     private GameObject gameOverPanel;
 
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // Инстанцируем Canvas-префаб и находим Panel внутри
+            
             if (gameOverCanvasPrefab != null)
             {
                 gameOverCanvas = Instantiate(gameOverCanvasPrefab);
@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // Старый метод: Перезагрузка уровня с текущими lives и score (без сброса)
+    
     public void ReloadCurrentLevel()
     {
         string currentScene = SceneManager.GetActiveScene().name;
@@ -176,18 +176,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Модифицированный метод: Рестарт после Game Over (сброс lives=3, сохранение score и level, перезагрузка уровня с этими значениями)
+  
     public void RestartCurrentLevel()
     {
         Debug.Log($"Рестарт уровня после Game Over: сброс lives=3, сохранение score={score} и level={level}, перезагрузка уровня");
-        lives = 3;  // Сброс жизней для продолжения
-        // score остается прежним (значение до появления панели, т.е. на момент GameOver)
-        // level остается прежним
+        lives = 3; 
         ResetLevel();
-        Time.timeScale = 1f;  // Восстановление времени
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);  // Скрытие панели
-        SceneManager.sceneLoaded += OnLevelLoaded;  // Добавление обработчика
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);  // Перезагрузка текущей сцены с обновленными значениями
+        Time.timeScale = 1f;  
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);  
+        SceneManager.sceneLoaded += OnLevelLoaded;  
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);  
     }
 
     public void LoadMenu()
