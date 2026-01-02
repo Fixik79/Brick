@@ -2,35 +2,35 @@ using UnityEngine;
 
 public class CollisionBehavior : MonoBehaviour
 {
-    private ICollisionAbility[] _collisionAbilities;
-    private PlayerInventory _inventory;  // Добавляем ссылку на инвентарь (предполагаем, что он на том же объекте)
+    private ICollisionAbility[] _collisionAbilities; // Массив способностей (через GetComponents)
 
-    private void Start()
+private void Start()
+{
+    _collisionAbilities = GetComponents<ICollisionAbility>(); // Получаем все способности на этом объекте
+
+    if (PlayerInventory.Instance == null)
     {
-        // Получаем все компоненты, реализующие интерфейс ICollisionAbility
-        _collisionAbilities = GetComponents<ICollisionAbility>();
-
-        // Ищем инвентарь на этом же объекте (или можем передать его извне)
-        _inventory = GetComponent<PlayerInventory>();
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        // Существующая логика: проверяем и используем способности
-        if (_collisionAbilities.Length > 0)
-        {
-            foreach (var ability in _collisionAbilities)
-            {
-                ability.UseAbility(collision.gameObject);
-            }
-        }
-
-        // Новая логика: проверяем, есть ли на столкнувшемся объекте компонент ItemPickup для подбора
-        var itemPickup = collision.gameObject.GetComponent<ItemPickup>();
-        if (itemPickup != null)
-        {
-            itemPickup.PickUp(_inventory);  // Собираем предмет
-        }
+        Debug.LogError("CollisionBehavior: PlayerInventory.Instance не найден!");
     }
 }
 
+private void OnTriggerEnter(Collider other)
+{
+    // Вызываем способности (например, наносить урон врагу)
+    if (_collisionAbilities.Length > 0)
+    {
+        foreach (var ability in _collisionAbilities)
+        {
+            ability.UseAbility(other.gameObject);
+        }
+    }
+
+    // Подбираем предмет, используя Singleton
+    var itemPickup = other.GetComponent<ItemPickup>();
+    if (itemPickup != null && PlayerInventory.Instance != null)
+    {
+        itemPickup.PickUp(PlayerInventory.Instance);
+        Destroy(other.gameObject); // Уничтожаем объект предмета после подбора
+    }
+}
+}

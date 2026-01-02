@@ -1,89 +1,55 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class ItemAddedEvent : UnityEvent<Item> { }
 
 public class PlayerInventory : MonoBehaviour
 {
-    [SerializeField] private List<Item> items = new List<Item>();  // Список всех предметов в инвентаре
+    public static PlayerInventory Instance { get; private set; } // Singleton-паттерн: единичный доступ
+    public Action OnInventoryChanged { get; internal set; }
 
-    public int MaxCapacity = 10;  // Максимум предметов (можно изменить или убрать для бесконечного инвентаря)
+    [SerializeField] private int maxSlots = 4; // Максимум слотов, настраивается в Inspector
+    private Item[] inventoryItems; // Массив предметов
+    public UnityEvent<int> OnItemAddedAtIndex; // Событие: предмет добавлен, передаёт индекс слота
 
-    // Событие для уведомления UI или других систем о изменениях (опционально, но полезно для обновления интерфейса)
-    public System.Action OnInventoryChanged;
-
-    // Метод добавления предмета в инвентарь
-    public bool AddItem(Item item)
+    private void Awake()
     {
-        if (item == null)
+        // Гарантируем только один экземпляр
+        if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("Попытка добавить null предмет!");
-            return false;
+            Destroy(gameObject); // Уничтожаем дубликаты, если появятся
+            return;
         }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Опционально: сохраняет инвентарь между сценами
 
-        if (items.Count >= MaxCapacity)
-        {
-            Debug.LogWarning("Инвентарь полон! Не могу добавить: " + item.itemName);
-            return false;
-        }
-
-        // Проверяем, есть ли уже такой предмет (для уникальности, если нужно)
-        if (items.Contains(item))
-        {
-            Debug.LogWarning("Предмет уже в инвентаре: " + item.itemName);
-            return false;  // Или можно добавить стекинг: item.StackSize++
-        }
-
-        items.Add(item);
-        Debug.Log("Добавлен предмет в инвентарь: " + item.itemName);
-
-        // Вызываем событие для обновления UI (если есть)
-        OnInventoryChanged?.Invoke();
-
-        return true;
+        inventoryItems = new Item[maxSlots];
+        OnItemAddedAtIndex = new UnityEvent<int>();
     }
 
-    // Метод удаления предмета (полезно для использования или продажи)
-    public bool RemoveItem(Item item)
+    // Добавляет предмет в первый свободный слот
+    public void AddItem(Item item)
     {
-        if (items.Remove(item))
+        for (int i = 0; i < maxSlots; i++)
         {
-            Debug.Log("Удалён предмет из инвентаря: " + item.itemName);
-            OnInventoryChanged?.Invoke();
-            return true;
-        }
-        Debug.LogWarning("Предмет не найден в инвентаре: " + item.itemName);
-        return false;
-    }
-
-    // Метод получения всех предметов (для UI или проверки)
-    public List<Item> GetItems()
-    {
-        return new List<Item>(items);  // Возвращаем копию, чтобы не модифицировать оригинал
-    }
-
-    // Метод поиска конкретного предмета (по имени или типу)
-    public Item FindItem(string itemName)
-    {
-        return items.Find(i => i.itemName == itemName);
-    }
-
-    // Метод использования предмета (если Item реализует IUsable или подобное; пока базовый)
-    public void UseItem(Item item)
-    {
-        if (items.Contains(item))
-        {
-            // Здесь можно добавить логику использования, например:
-            // if (item is Weapon) { EquipWeapon((Weapon)item); }
-            Debug.Log("Использован предмет: " + item.itemName);
-
-            // Автоматически удаляем после использования (для расходников; для оружия — нет)
-            if (item.isConsumable)  // Теперь поле доступно
+            if (inventoryItems[i] == null)
             {
-                RemoveItem(item);
+                inventoryItems[i] = item;
+                OnItemAddedAtIndex.Invoke(i); // Уведомляем UI о новом слоте
+                Debug.Log($"Предмет {item.name} добавлен в слот {i}");
+                return;
             }
         }
-        else
-        {
-            Debug.LogWarning("Предмет не в инвентаре: " + item.itemName);
-        }
+        Debug.Log("Инвентарь полон!");
+    }
+
+    // Возвращает массив предметов (для UI)
+    public Item[] GetItems() => inventoryItems;
+
+    internal void UseItem(Item item)
+    {
+        throw new NotImplementedException();
     }
 }

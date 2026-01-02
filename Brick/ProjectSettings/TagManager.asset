@@ -9,6 +9,10 @@ TagManager:
   - Paddle
   - Brick
   - LosingPanel
+  - CinemachineTarget
+  - Enemy
+  - Hazard
+  - Potion
   layers:
   - Default
   - TransparentFX

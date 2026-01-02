@@ -2,15 +2,18 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    [SerializeField] private Item item;  // Ссылка на твой ScriptableObject Item (выбери в Inspector)
+    public Item[] items; // Массив возможных предметов (в Inspector: добавьте Item-ассеты)
 
-    // Метод для подбора. Вызывается извне (например, из CollisionBehavior)
     public void PickUp(PlayerInventory inventory)
     {
-        if (inventory != null && item != null)
+        if (items.Length > 0)
         {
-            inventory.AddItem(item);  // Добавляем в инвентарь (используя твой PlayerInventory)
-            Destroy(gameObject);      // Удаляем объект из сцены
+            Item randomItem = items[Random.Range(0, items.Length)]; // Рандомный выбор
+            inventory.AddItem(randomItem); // Добавляем в инвентарь
+        }
+        else
+        {
+            Debug.LogWarning("ItemPickup: Нет предметов в массиве!");
         }
     }
 }
