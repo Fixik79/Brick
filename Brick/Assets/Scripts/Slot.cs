@@ -3,21 +3,21 @@ using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {
-    public Image icon; // Иконка предмета (в Inspector: перетащите дочерний Image)
-    public Text itemName; // Текст имени (в Inspector: перетащите дочерний Text)
+    public Image icon;
+    public Text itemName;
 
     public void SetItem(Item item)
     {
         if (item != null)
         {
-            icon.sprite = item.icon; // Устанавливаем иконку
-            icon.enabled = true; // Показываем
-            itemName.text = item.name; // Устанавливаем имя
+            icon.sprite = item.icon;
+            icon.enabled = true;
+            itemName.text = item.itemName; // Исправлено: itemName вместо item.name
         }
         else
         {
             icon.sprite = null;
-            icon.enabled = false; // Скрываем пустой слот
+            icon.enabled = false;
             itemName.text = "";
         }
     }

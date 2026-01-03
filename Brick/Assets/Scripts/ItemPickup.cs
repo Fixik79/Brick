@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    public Item[] items; // Массив возможных предметов (в Inspector: добавьте Item-ассеты)
+    // Массив возможных предметов (в Inspector: добавьте Item-ассеты)
+    public Item[] items;
 
     public void PickUp(PlayerInventory inventory)
     {
         if (items.Length > 0)
         {
-            Item randomItem = items[Random.Range(0, items.Length)]; // Рандомный выбор
-            inventory.AddItem(randomItem); // Добавляем в инвентарь
+            // Рандомный выбор
+            Item randomItem = items[Random.Range(0, items.Length)];
+            // Добавляем в инвентарь
+            inventory.AddItem(randomItem);
+            // Уничтожаем объект сразу после подбора (перенесено сюда для надежности)
+            Destroy(gameObject);
         }
         else
         {

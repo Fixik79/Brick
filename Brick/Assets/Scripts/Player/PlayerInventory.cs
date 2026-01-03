@@ -1,32 +1,31 @@
+
 using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-[System.Serializable]
-public class ItemAddedEvent : UnityEvent<Item> { }
-
 public class PlayerInventory : MonoBehaviour
 {
-    public static PlayerInventory Instance { get; private set; } // Singleton-паттерн: единичный доступ
-    public Action OnInventoryChanged { get; internal set; }
+    public static PlayerInventory Instance { get; private set; }
+    // Убрали индекс из события для упрощения
+    public UnityEvent OnItemAdded;
 
-    [SerializeField] private int maxSlots = 4; // Максимум слотов, настраивается в Inspector
-    private Item[] inventoryItems; // Массив предметов
-    public UnityEvent<int> OnItemAddedAtIndex; // Событие: предмет добавлен, передаёт индекс слота
+    // Максимум слотов, настраивается в Inspector
+    [SerializeField] private int maxSlots;
+    // Массив предметов
+    private Item[] inventoryItems;
 
     private void Awake()
     {
         // Гарантируем только один экземпляр
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // Уничтожаем дубликаты, если появятся
+            Destroy(gameObject);
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Опционально: сохраняет инвентарь между сценами
-
+        DontDestroyOnLoad(gameObject);
         inventoryItems = new Item[maxSlots];
-        OnItemAddedAtIndex = new UnityEvent<int>();
+        OnItemAdded = new UnityEvent();
     }
 
     // Добавляет предмет в первый свободный слот
@@ -37,8 +36,9 @@ public class PlayerInventory : MonoBehaviour
             if (inventoryItems[i] == null)
             {
                 inventoryItems[i] = item;
-                OnItemAddedAtIndex.Invoke(i); // Уведомляем UI о новом слоте
-                Debug.Log($"Предмет {item.name} добавлен в слот {i}");
+                // Вызываем событие без индекса (теперь просто оповещаем о добавлении)
+                OnItemAdded.Invoke();
+                Debug.Log($"Предмет {item.itemName} добавлен в слот {i}"); // Исправил на itemName
                 return;
             }
         }
@@ -47,9 +47,4 @@ public class PlayerInventory : MonoBehaviour
 
     // Возвращает массив предметов (для UI)
     public Item[] GetItems() => inventoryItems;
-
-    internal void UseItem(Item item)
-    {
-        throw new NotImplementedException();
-    }
 }

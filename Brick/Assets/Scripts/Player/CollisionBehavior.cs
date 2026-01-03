@@ -1,36 +1,72 @@
 using UnityEngine;
+using UnityEngine.UI; // Для UI-промпта
 
 public class CollisionBehavior : MonoBehaviour
 {
-    private ICollisionAbility[] _collisionAbilities; // Массив способностей (через GetComponents)
+    // Массив способностей (через GetComponents)
+    private ICollisionAbility[] _collisionAbilities; // Предполагаю, что у вас есть ICollisionAbility; если нет, оставьте пустым
 
-private void Start()
-{
-    _collisionAbilities = GetComponents<ICollisionAbility>(); // Получаем все способности на этом объекте
+    // Поле для текущего предмета в зоне триггера
+    private ItemPickup currentPickup;
+    private bool canPick = false;
 
-    if (PlayerInventory.Instance == null)
+    // UI-промпт (создайте Text на Canvas и перетащите сюда в Inspector)
+    [SerializeField] private Text pickUpPrompt;
+
+    private void Start()
     {
-        Debug.LogError("CollisionBehavior: PlayerInventory.Instance не найден!");
-    }
-}
-
-private void OnTriggerEnter(Collider other)
-{
-    // Вызываем способности (например, наносить урон врагу)
-    if (_collisionAbilities.Length > 0)
-    {
-        foreach (var ability in _collisionAbilities)
+        _collisionAbilities = GetComponents<ICollisionAbility>();
+        if (PlayerInventory.Instance == null)
         {
-            ability.UseAbility(other.gameObject);
+            Debug.LogError("CollisionBehavior: PlayerInventory.Instance не найден!");
+        }
+        // Скрываем промпт по умолчанию
+        if (pickUpPrompt != null) pickUpPrompt.enabled = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Проверяем, если это предмет
+        var itemPickup = other.GetComponent<ItemPickup>();
+        if (itemPickup != null && PlayerInventory.Instance != null)
+        {
+            currentPickup = itemPickup;
+            canPick = true;
+            // Показываем промпт
+            if (pickUpPrompt != null) pickUpPrompt.enabled = true;
         }
     }
 
-    // Подбираем предмет, используя Singleton
-    var itemPickup = other.GetComponent<ItemPickup>();
-    if (itemPickup != null && PlayerInventory.Instance != null)
+    private void OnTriggerExit(Collider other)
     {
-        itemPickup.PickUp(PlayerInventory.Instance);
-        Destroy(other.gameObject); // Уничтожаем объект предмета после подбора
+        var itemPickup = other.GetComponent<ItemPickup>();
+        if (itemPickup == currentPickup)
+        {
+            canPick = false;
+            currentPickup = null;
+            // Скрываем промпт
+            if (pickUpPrompt != null) pickUpPrompt.enabled = false;
+        }
+        // Все еще вызываем способности при выходе, если нужно (оставил как есть)
+        if (_collisionAbilities.Length > 0)
+        {
+            foreach (var ability in _collisionAbilities)
+            {
+                ability.UseAbility(other.gameObject);
+            }
+        }
     }
-}
+
+    private void Update()
+    {
+        // Проверяем нажатие E, если предмет в зоне и можно подобрать
+        if (canPick && Input.GetKeyDown(KeyCode.E) && PlayerInventory.Instance != null)
+        {
+            currentPickup.PickUp(PlayerInventory.Instance);
+            canPick = false;
+            currentPickup = null;
+            // Скрываем промпт (хотя объект уже уничтожен)
+            if (pickUpPrompt != null) pickUpPrompt.enabled = false;
+        }
+    }
 }

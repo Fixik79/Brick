@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class InventoryUI : MonoBehaviour
 {
-    [SerializeField] private Transform slotsParent; // Родительский объект для слотов (перетащите объект "SlotsParent")
+    // Родительский объект для слотов (перетащите объект "SlotsParent")
+    [SerializeField] private Transform slotsParent;
 
-    private Slot[] slots; // МАССИВ слотов UI (единственное поле с этим именем)
+    // МАССИВ слотов UI (единственное поле с этим именем)
+    private Slot[] slots;
 
     private void Start()
     {
@@ -13,31 +15,24 @@ public class InventoryUI : MonoBehaviour
             Debug.LogError("InventoryUI: PlayerInventory.Instance не найден! Убедитесь, что PlayerInventory на сцене.");
             return;
         }
-
-        slots = slotsParent.GetComponentsInChildren<Slot>(); // Получаем все слоты (без неоднозначности, возвращает массив Slot[])
-
-        PlayerInventory.Instance.OnItemAddedAtIndex.AddListener(UpdateSingleSlot); // Подписываемся на событие добавления
-
-        UpdateSlots(); // Запускаем UI
+        // Получаем все слоты
+        slots = slotsParent.GetComponentsInChildren<Slot>();
+        // Подписываемся на событие добавления (теперь без индекса)
+        PlayerInventory.Instance.OnItemAdded.AddListener(UpdateSlots); // Вызываем UpdateSlots напрямую
+        // Запускаем UI
+        UpdateSlots();
     }
 
-    // Обновляет все слоты (использует локальную переменную для безопасности)
+    // Обновляет все слоты (единственный метод обновления)
     private void UpdateSlots()
     {
         if (slots == null || PlayerInventory.Instance == null) return;
         Item[] items = PlayerInventory.Instance.GetItems();
         for (int i = 0; i < slots.Length; i++)
         {
-            slots[i].SetItem(items[i]); // Без конфликтов — slots[i] однозначно
+            slots[i].SetItem(items[i]);
         }
     }
 
-    // Обновляет один слот по индексу
-    private void UpdateSingleSlot(int index)
-    {
-        if (slots != null && index < slots.Length && PlayerInventory.Instance != null)
-        {
-            slots[index].SetItem(PlayerInventory.Instance.GetItems()[index]);
-        }
-    }
+    // Убрали UpdateSingleSlot, так как теперь обновляем весь UI
 }

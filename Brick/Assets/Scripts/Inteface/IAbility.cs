@@ -1,8 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
 
-public interface IAbility 
+public interface IAbility
 {
-    void UseAbility(GameObject target);  
+    void UseAbility(GameObject target);
 }
