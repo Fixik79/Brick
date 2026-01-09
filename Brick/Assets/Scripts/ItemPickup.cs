@@ -11,10 +11,17 @@ public class ItemPickup : MonoBehaviour
         {
             // Рандомный выбор
             Item randomItem = items[Random.Range(0, items.Length)];
-            // Добавляем в инвентарь
-            inventory.AddItem(randomItem);
-            // Уничтожаем объект сразу после подбора (перенесено сюда для надежности)
-            Destroy(gameObject);
+
+            // Пробуем добавить в инвентарь
+            if (inventory.AddItem(randomItem))
+            {
+                // Только если успешно — уничтожаем объект
+                Destroy(gameObject);
+            }
+            else
+            {
+                Debug.Log("Не удалось подобрать предмет: инвентарь полон.");
+            }
         }
         else
         {
