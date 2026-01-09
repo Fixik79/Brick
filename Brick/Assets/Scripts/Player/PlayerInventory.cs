@@ -8,6 +8,7 @@ public class PlayerInventory : MonoBehaviour
     public static PlayerInventory Instance { get; private set; }
 
     public UnityEvent OnItemAdded;
+    public UnityEvent OnItemUsed; // Новое событие при использовании предмета
 
     [SerializeField] private int maxSlots = 10;
     private Item[] inventoryItems;
@@ -24,6 +25,7 @@ public class PlayerInventory : MonoBehaviour
 
         inventoryItems = new Item[maxSlots];
         OnItemAdded = new UnityEvent();
+        OnItemUsed = new UnityEvent();
     }
 
     public void AddItem(Item item)
@@ -34,10 +36,8 @@ public class PlayerInventory : MonoBehaviour
             {
                 inventoryItems[i] = item;
 
-                // === ЛОГИКА ВЫВОДА ТЕГА ===
                 string tagDisplay = string.IsNullOrEmpty(item.itemTypeTag) ? "неизвестный тип" : item.itemTypeTag;
                 Debug.Log($"Предмет \"{item.itemName}\" с типом \"{tagDisplay}\" добавлен в слот {i}");
-                // ===========================
 
                 OnItemAdded.Invoke();
                 return;
@@ -45,6 +45,27 @@ public class PlayerInventory : MonoBehaviour
         }
         Debug.Log("Инвентарь полон!");
     }
+
+    // === НОВЫЙ МЕТОД ДЛЯ ИСПОЛЬЗОВАНИЯ ЕДЫ ===
+    public bool UseFoodItem()
+    {
+        for (int i = 0; i < inventoryItems.Length; i++)
+        {
+            if (inventoryItems[i] != null && inventoryItems[i].itemTypeTag == "food")
+            {
+                Debug.Log($"Использован предмет: {inventoryItems[i].itemName}. Здоровье восстановлено.");
+
+                inventoryItems[i] = null; // Удаляем предмет
+                OnItemUsed.Invoke();     // Сигнализируем об изменении
+
+                return true;
+            }
+        }
+
+        Debug.Log("Нет доступной еды для использования.");
+        return false;
+    }
+    // ======================================
 
     public Item[] GetItems() => inventoryItems;
 }
