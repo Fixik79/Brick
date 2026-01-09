@@ -16,3 +16,4 @@ MonoBehaviour:
   icon: {fileID: 8381225099064421809, guid: ed89ecfb48b9ae94998e7a47ad57cf23, type: 3}
   description: Batton
   isStackable: 1
+  itemTypeTag: food

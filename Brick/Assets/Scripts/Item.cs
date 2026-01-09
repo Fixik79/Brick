@@ -3,9 +3,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]
 public class Item : ScriptableObject
 {
-    public string itemName; // Основное имя
-    public Sprite icon;
-    public string description;
-    public bool isStackable; // Основное поле для стакинга
-    // Убрал дублированные amount и stackable (isStackable уже есть)
+    public string itemName;         // Название предмета
+    public Sprite icon;             // Иконка
+    public string description;      // Описание
+    public bool isStackable;        // Можно ли стакать
+
+    [Tooltip("Укажите тип предмета (например: здоровье, патроны, оружие и т.д.)")]
+    public string itemTypeTag;      // Тип предмета (новое поле)
 }
