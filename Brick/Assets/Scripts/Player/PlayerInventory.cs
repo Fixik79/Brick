@@ -2,70 +2,82 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEditor.Progress;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public static PlayerInventory Instance { get; private set; }
+    public static PlayerInventory Instance;
+
+    [SerializeField] private int inventorySize = 10;
+    public Item[] inventoryItems;
 
     public UnityEvent OnItemAdded;
-    public UnityEvent OnItemUsed; // Новое событие при использовании предмета
-
-    [SerializeField] private int maxSlots = 10;
-    private Item[] inventoryItems;
+    public UnityEvent OnItemUsed; // <-- Добавлено
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
+        if (Instance == null)
+            Instance = this;
+        else
             Destroy(gameObject);
-            return;
-        }
-        Instance = this;
+
         DontDestroyOnLoad(gameObject);
 
-        inventoryItems = new Item[maxSlots];
-        OnItemAdded = new UnityEvent();
-        OnItemUsed = new UnityEvent();
+        inventoryItems = new Item[inventorySize];
     }
 
-    public void AddItem(Item item)
-    {
-        for (int i = 0; i < maxSlots; i++)
-        {
-            if (inventoryItems[i] == null)
-            {
-                inventoryItems[i] = item;
-
-                string tagDisplay = string.IsNullOrEmpty(item.itemTypeTag) ? "неизвестный тип" : item.itemTypeTag;
-                Debug.Log($"Предмет \"{item.itemName}\" с типом \"{tagDisplay}\" добавлен в слот {i}");
-
-                OnItemAdded.Invoke();
-                return;
-            }
-        }
-        Debug.Log("Инвентарь полон!");
-    }
-
-    // === НОВЫЙ МЕТОД ДЛЯ ИСПОЛЬЗОВАНИЯ ЕДЫ ===
-    public bool UseFoodItem()
+    public bool AddItem(Item itemToAdd)
     {
         for (int i = 0; i < inventoryItems.Length; i++)
         {
-            if (inventoryItems[i] != null && inventoryItems[i].itemTypeTag == "food")
+            if (inventoryItems[i] == null)
             {
-                Debug.Log($"Использован предмет: {inventoryItems[i].itemName}. Здоровье восстановлено.");
+                inventoryItems[i] = itemToAdd;
 
-                inventoryItems[i] = null; // Удаляем предмет
-                OnItemUsed.Invoke();     // Сигнализируем об изменении
+                // Логируем предмет и его тег
+                string tagDisplay = string.IsNullOrEmpty(itemToAdd.itemTypeTag) ? "неизвестный тип" : itemToAdd.itemTypeTag;
+                Debug.Log($"Предмет \"{itemToAdd.itemName}\" с типом \"{tagDisplay}\" добавлен в слот {i}");
 
+                OnItemAdded?.Invoke();
                 return true;
             }
         }
 
-        Debug.Log("Нет доступной еды для использования.");
+        Debug.Log("Инвентарь полон!");
         return false;
     }
-    // ======================================
 
-    public Item[] GetItems() => inventoryItems;
+    public bool UseItem(int index)
+    {
+        if (index < 0 || index >= inventoryItems.Length)
+        {
+            Debug.LogWarning("Неверный индекс предмета");
+            return false;
+        }
+
+        Item item = inventoryItems[index];
+        if (item == null)
+        {
+            Debug.Log("Слот пуст");
+            return false;
+        }
+
+        if (item is IUsableItem usableItem)
+        {
+            usableItem.Use(gameObject); // Передаем игрока как пользователя
+            inventoryItems[index] = null; // Удаляем предмет после использования
+            OnItemUsed?.Invoke();
+            return true;
+        }
+        else
+        {
+            Debug.Log($"Предмет {item.itemName} нельзя использовать");
+            return false;
+        }
+    }
+
+    public Item[] GetItems()
+    {
+        return inventoryItems;
+    }
 }

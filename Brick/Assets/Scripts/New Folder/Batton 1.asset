@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79c03d3e82f158341b54c928ca5866cd, type: 3}
-  m_Name: Star
+  m_Script: {fileID: 11500000, guid: 882c21c52f45b93469c7aa5d5ef446e8, type: 3}
+  m_Name: Batton 1
   m_EditorClassIdentifier: 
-  itemName: Star
-  icon: {fileID: 21300080, guid: 1eaee135ce037439d925cee5e41ce026, type: 3}
-  description: vcxvxcv
-  isStackable: 1
+  itemName: Batton
+  icon: {fileID: 8381225099064421809, guid: ed89ecfb48b9ae94998e7a47ad57cf23, type: 3}
+  description: 
+  isStackable: 0
+  itemTypeTag: Food
+  healthRestoreAmount: 25

@@ -4,21 +4,19 @@ using UnityEngine.UI;
 public class Slot : MonoBehaviour
 {
     public Image icon;
-    public Text itemName;
+    private Item item;
 
-    public void SetItem(Item item)
+    public void AddItem(Item newItem)
     {
-        if (item != null)
-        {
-            icon.sprite = item.icon;
-            icon.enabled = true;
-            itemName.text = item.itemName; // Исправлено: itemName вместо item.name
-        }
-        else
-        {
-            icon.sprite = null;
-            icon.enabled = false;
-            itemName.text = "";
-        }
+        item = newItem;
+        icon.sprite = item.icon;
+        icon.enabled = true;        
+    }
+
+    public void ClearSlot()
+    {
+        item = null;
+        icon.sprite = null;
+        icon.enabled = false;        
     }
 }

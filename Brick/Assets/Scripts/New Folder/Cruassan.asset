@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79c03d3e82f158341b54c928ca5866cd, type: 3}
-  m_Name: Batton
+  m_Script: {fileID: 11500000, guid: 882c21c52f45b93469c7aa5d5ef446e8, type: 3}
+  m_Name: Cruassan
   m_EditorClassIdentifier: 
-  itemName: Batton
-  icon: {fileID: 8381225099064421809, guid: ed89ecfb48b9ae94998e7a47ad57cf23, type: 3}
-  description: Batton
-  isStackable: 1
+  itemName: Cruassan
+  icon: {fileID: 21300000, guid: b74c31d447d2f5d41a61081bdf5e7126, type: 3}
+  description: 
+  isStackable: 0
   itemTypeTag: food
+  healthRestoreAmount: 1

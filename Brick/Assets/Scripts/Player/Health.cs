@@ -45,7 +45,7 @@ public class Health : MonoBehaviour, IDamageable
         }
     }
 
-    public void PlusDamage(float damage)
+    public void Heal(float damage)
     {
         // ”величиваем  текущее здоровье на величину урона
         currentHealth += damage;

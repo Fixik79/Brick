@@ -77,7 +77,7 @@ public class BasicRigidBodyPush : MonoBehaviour
             {// Количество здоровья, которое прибавляется
                 float healingAmount = 10f;
                 // Прибавляем здоровье
-                health.PlusDamage(healingAmount); 
+                health.Heal(healingAmount); 
 
                 // Удаляем объект "Potion"
                 Destroy(hit.collider.gameObject);
