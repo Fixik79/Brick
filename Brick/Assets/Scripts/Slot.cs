@@ -10,13 +10,13 @@ public class Slot : MonoBehaviour
     {
         item = newItem;
         icon.sprite = item.icon;
-        icon.enabled = true;        
+        icon.enabled = true;
     }
 
     public void ClearSlot()
     {
         item = null;
         icon.sprite = null;
-        icon.enabled = false;        
+        icon.enabled = false;
     }
 }

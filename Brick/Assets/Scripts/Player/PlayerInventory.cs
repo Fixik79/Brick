@@ -12,7 +12,8 @@ public class PlayerInventory : MonoBehaviour
     public Item[] inventoryItems;
 
     public UnityEvent OnItemAdded;
-    public UnityEvent OnItemUsed; // <-- Добавлено
+    //Добавлено
+    public UnityEvent OnItemUsed;
 
     private void Awake()
     {
@@ -64,8 +65,10 @@ public class PlayerInventory : MonoBehaviour
 
         if (item is IUsableItem usableItem)
         {
-            usableItem.Use(gameObject); // Передаем игрока как пользователя
-            inventoryItems[index] = null; // Удаляем предмет после использования
+            // Передаем игрока как пользователя
+            usableItem.Use(gameObject);
+            // Удаляем предмет после использования
+            inventoryItems[index] = null; 
             OnItemUsed?.Invoke();
             return true;
         }

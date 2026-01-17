@@ -8,7 +8,8 @@ public class nventoryPanelToggle : MonoBehaviour
     void Start()
     {
         if (panelGroup == null) panelGroup = GetComponent<CanvasGroup>();
-        if (panelGroup != null) panelGroup.alpha = 0; // Скрыто
+        // Скрыто
+        if (panelGroup != null) panelGroup.alpha = 0;
         isVisible = false;
     }
 

@@ -1,6 +1,6 @@
 using System.IO;
 using UnityEngine;
-//using Newtonsoft.Json;
+//using Newtonsoft.Json;скрипт в другом проекте пока ,чтоб не забыть 
 
 public class Health : MonoBehaviour, IDamageable
 {

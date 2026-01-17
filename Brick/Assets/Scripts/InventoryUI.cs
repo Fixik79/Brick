@@ -8,7 +8,8 @@ public class InventoryUI : MonoBehaviour
     private void Start()
     {
         PlayerInventory.Instance.OnItemAdded.AddListener(UpdateUI);
-        PlayerInventory.Instance.OnItemUsed.AddListener(UpdateUI); // <-- Подписались на событие
+        // Подписались на событие
+        PlayerInventory.Instance.OnItemUsed.AddListener(UpdateUI); 
         slots = itemsParent.GetComponentsInChildren<Slot>();
         UpdateUI();
     }
